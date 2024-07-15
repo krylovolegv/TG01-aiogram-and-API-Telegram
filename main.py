@@ -6,6 +6,8 @@ from aiogram.types import Message, FSInputFile
 import random
 from config import TOKEN
 from datetime import datetime, timedelta
+from gtts import gTTS
+import os
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -63,6 +65,22 @@ async def video(message: Message):
 async def audio(message: Message):
     audio = FSInputFile('house.mp3')
     await bot.send_audio(message.chat.id, audio)
+
+@dp.message(Command('training'))
+async def training(message: Message):
+   training_list = [
+       "Тренировка 1:\n1. Скручивания: 3 подхода по 15 повторений\n2. Велосипед: 3 подхода по 20 повторений (каждая сторона)\n3. Планка: 3 подхода по 30 секунд",
+       "Тренировка 2:\n1. Подъемы ног: 3 подхода по 15 повторений\n2. Русский твист: 3 подхода по 20 повторений (каждая сторона)\n3. Планка с поднятой ногой: 3 подхода по 20 секунд (каждая нога)",
+       "Тренировка 3:\n1. Скручивания с поднятыми ногами: 3 подхода по 15 повторений\n2. Горизонтальные ножницы: 3 подхода по 20 повторений\n3. Боковая планка: 3 подхода по 20 секунд (каждая сторона)"
+   ]
+   rand_tr = random.choice(training_list)
+   await message.answer(f"Это ваша мини-тренировка на сегодня {rand_tr}")
+
+   tts = gTTS(text=rand_tr, lang='ru')
+   tts.save('training.mp3')
+   audio = FSInputFile('training.mp3')
+   await bot.send_audio(message.chat.id, audio)
+   os.remove("training.mp3")
 
 @dp.message(Command('photo'))
 async def photo(message: Message):
