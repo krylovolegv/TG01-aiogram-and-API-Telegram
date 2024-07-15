@@ -2,7 +2,7 @@ import asyncio
 import requests
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 import random
 from config import TOKEN
 from datetime import datetime, timedelta
@@ -52,6 +52,17 @@ async def get_weather():
 async def weather(message: Message):
     weather_info = await get_weather()
     await message.answer(weather_info)
+
+@dp.message(Command('video'))
+async def video(message: Message):
+    await bot.send_chat_action(message.chat.id, 'upload_video')
+    video = FSInputFile('samurai2.mp4')
+    await message.answer_video(video=video)
+
+@dp.message(Command('audio'))
+async def audio(message: Message):
+    audio = FSInputFile('house.mp3')
+    await bot.send_audio(message.chat.id, audio)
 
 @dp.message(Command('photo'))
 async def photo(message: Message):
