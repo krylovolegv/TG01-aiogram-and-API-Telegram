@@ -8,6 +8,11 @@ from config import TOKEN
 from datetime import datetime, timedelta
 from gtts import gTTS
 import os
+import os
+from aiogram.types import ContentType
+
+if not os.path.exists('img'):
+    os.makedirs('img')
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -109,7 +114,18 @@ async def react_photo(message: Message):
     list = ['Ого, какая фотка!', 'Непонятно, что это такое', 'Не отправляй мне такое больше']
     rand_answ = random.choice(list)
     await message.answer(rand_answ)
-    await bot.download(message.photo[-1], destination=f'tmp/{message.photo[-1].file_id}.jpg')
+
+    # Получаем информацию о файле
+    file_info = await bot.get_file(message.photo[-1].file_id)
+    file_extension = os.path.splitext(file_info.file_path)[1]
+
+    # Создаем имя файла
+    file_name = f"img/{message.photo[-1].file_id}{file_extension}"
+
+    # Скачиваем и сохраняем файл
+    await bot.download_file(file_info.file_path, file_name)
+
+    await message.answer(f"Фото сохранено как {file_name}")
 
 
 @dp.message(F.text == "что такое ИИ?")
