@@ -53,7 +53,6 @@ async def weather(message: Message):
     weather_info = await get_weather()
     await message.answer(weather_info)
 
-
 @dp.message(Command('photo'))
 async def photo(message: Message):
     list = ['https://avatanplus.com/files/resources/original/58cc4caaaf88815ade0b7adf.png',
@@ -68,6 +67,7 @@ async def react_photo(message: Message):
     list = ['Ого, какая фотка!', 'Непонятно, что это такое', 'Не отправляй мне такое больше']
     rand_answ = random.choice(list)
     await message.answer(rand_answ)
+    await bot.download(message.photo[-1], destination=f'tmp/{message.photo[-1].file_id}.jpg')
 
 
 @dp.message(F.text == "что такое ИИ?")
@@ -83,8 +83,20 @@ async def help(message: Message):
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    await message.answer("Приветики, я бот!")
+    await message.answer(f'Приветики, {message.from_user.full_name}')
 
+@dp.message()
+async def start(message: Message):
+		if message.text.lower() == 'test':
+                    await message.answer('Тестируем')
+
+@dp.message()
+async def start(message: Message):
+    await message.send_copy(chat_id=message.chat.id)
+
+@dp.message()
+async def start(message: Message):
+    await message.answer("Я тебе ответил")
 
 async def main():
     await dp.start_polling(bot)
