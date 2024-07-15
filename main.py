@@ -8,11 +8,12 @@ from config import TOKEN
 from datetime import datetime, timedelta
 from gtts import gTTS
 import os
-import os
-from aiogram.types import ContentType
+from googletrans import Translator
 
 if not os.path.exists('img'):
     os.makedirs('img')
+
+translator = Translator()
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -143,18 +144,30 @@ async def help(message: Message):
 async def start(message: Message):
     await message.answer(f'Приветики, {message.from_user.full_name}')
 
-@dp.message()
-async def start(message: Message):
-		if message.text.lower() == 'test':
-                    await message.answer('Тестируем')
+# @dp.message()
+# async def start(message: Message):
+# 		if message.text.lower() == 'test':
+#                     await message.answer('Тестируем')
 
-@dp.message()
-async def start(message: Message):
-    await message.send_copy(chat_id=message.chat.id)
+# Добавляем новую функцию для перевода текста
+@dp.message(F.text)
+async def translate_text(message: Message):
+    original_text = message.text
 
-@dp.message()
-async def start(message: Message):
-    await message.answer("Я тебе ответил")
+    # Проверяем специальные случаи
+    if original_text.startswith('/') or original_text.lower() == 'test' or original_text == "что такое ИИ?":
+        return
+
+    try:
+        # Переводим текст на английский
+        translation = translator.translate(original_text, dest='en')
+
+        # Формируем ответное сообщение
+        response = f"Оригинал: {original_text}\nПеревод: {translation.text}"
+
+        await message.reply(response)
+    except Exception as e:
+        await message.reply(f"Извините, произошла ошибка при переводе: {str(e)}")
 
 async def main():
     await dp.start_polling(bot)
