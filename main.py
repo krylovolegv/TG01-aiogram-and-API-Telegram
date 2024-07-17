@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from gtts import gTTS
 import os
 from googletrans import Translator
+import keyboard as kb
 
 if not os.path.exists('img'):
     os.makedirs('img')
@@ -142,7 +143,10 @@ async def help(message: Message):
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    await message.answer(f'Приветики, {message.from_user.full_name}')
+    # await message.answer(f'Приветики, {message.from_user.full_name}', reply_markup=kb.main)
+    # await message.answer(f'Приветики, {message.from_user.full_name}', reply_markup=kb.inline_keyboard_test)
+    await message.answer(f'Приветики, {message.from_user.first_name}',
+                         reply_markup=await kb.test_keyboard())
 
 # @dp.message()
 # async def start(message: Message):
@@ -150,24 +154,24 @@ async def start(message: Message):
 #                     await message.answer('Тестируем')
 
 # Добавляем новую функцию для перевода текста
-@dp.message(F.text)
-async def translate_text(message: Message):
-    original_text = message.text
-
-    # Проверяем специальные случаи
-    if original_text.startswith('/') or original_text.lower() == 'test' or original_text == "что такое ИИ?":
-        return
-
-    try:
-        # Переводим текст на английский
-        translation = translator.translate(original_text, dest='en')
-
-        # Формируем ответное сообщение
-        response = f"Оригинал: {original_text}\nПеревод: {translation.text}"
-
-        await message.reply(response)
-    except Exception as e:
-        await message.reply(f"Извините, произошла ошибка при переводе: {str(e)}")
+# @dp.message(F.text)
+# async def translate_text(message: Message):
+#     original_text = message.text
+#
+#     # Проверяем специальные случаи
+#     if original_text.startswith('/') or original_text.lower() == 'test' or original_text == "что такое ИИ?":
+#         return
+#
+#     try:
+#         # Переводим текст на английский
+#         translation = translator.translate(original_text, dest='en')
+#
+#         # Формируем ответное сообщение
+#         response = f"Оригинал: {original_text}\nПеревод: {translation.text}"
+#
+#         await message.reply(response)
+#     except Exception as e:
+#         await message.reply(f"Извините, произошла ошибка при переводе: {str(e)}")
 
 async def main():
     await dp.start_polling(bot)
